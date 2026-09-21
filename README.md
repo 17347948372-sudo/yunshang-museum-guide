@@ -86,16 +86,16 @@ Render 会自动提供可信 HTTPS，电脑和手机可以直接访问。
 
 `PUBLIC_ORIGIN` 可以暂时不填，服务会校验请求是否来自当前 Vercel 域名。绑定自定义域名后，建议将其设置为完整的 HTTPS 地址。
 
-## 公网部署方案三：Cloudflare Pages（无需绑卡）
+## 公网部署方案三：Cloudflare Workers（无需绑卡）
 
-仓库包含 `/functions` Pages Functions、`public/_headers` 和 `wrangler.jsonc`：
+仓库包含 `worker.mjs`、Static Assets 配置和 `wrangler.jsonc`：
 
-1. 使用 GitHub 登录 Cloudflare，并创建 Pages 项目。
+1. 使用 GitHub 登录 Cloudflare，并创建 Workers & Pages 项目。
 2. 选择 `yunshang-museum-guide` 仓库。
-3. Framework preset 选择 `Vite`，构建命令填写 `pnpm build`，输出目录填写 `dist`。
+3. 构建命令填写 `pnpm run build`，部署命令填写 `npx wrangler deploy`，根目录填写 `/`。
 4. 添加 `XMOV_APP_ID`、`XMOV_APP_SECRET` 和 `XMOV_GATEWAY` 环境变量。
-5. Compatibility flags 添加 `nodejs_compat`，兼容日期使用 `2026-09-18`。
-6. 部署后会得到免费的 `pages.dev` HTTPS 地址。
+5. `nodejs_compat` 和兼容日期已写入代码，无需在面板重复配置。
+6. 部署后会得到免费的 `workers.dev` HTTPS 地址。
 
 首次部署时不用填写 `PUBLIC_ORIGIN`，函数会自动校验当前访问域名。绑定自定义域名后再将它设置为完整 HTTPS 地址。
 
