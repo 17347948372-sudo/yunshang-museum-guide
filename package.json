@@ -1,0 +1,22 @@
+{
+  "name": "museum-embodied-guide",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.7.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"node --watch --env-file=.env server.mjs\" \"vite --host 0.0.0.0\"",
+    "build": "vite build",
+    "start": "node server.mjs",
+    "preview": "vite preview",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "compression": "^1.8.2",
+    "express": "^5.2.1"
+  }
+}

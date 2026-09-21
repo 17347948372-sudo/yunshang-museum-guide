@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: yunshang-museum-guide
+    runtime: docker
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: XMOV_APP_ID
+        sync: false
+      - key: XMOV_APP_SECRET
+        sync: false
+      - key: XMOV_GATEWAY
+        value: https://nebula-agent.xingyun3d.com/user/v1/ttsa_v2/session
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: SESSION_RATE_LIMIT
+        value: "12"

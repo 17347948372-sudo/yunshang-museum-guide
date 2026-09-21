@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
