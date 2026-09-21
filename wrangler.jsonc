@@ -2,6 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "yunshang-museum-guide",
   "main": "worker.mjs",
+  "keep_vars": true,
   "compatibility_date": "2026-09-18",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
