@@ -75,7 +75,18 @@ pnpm start
 
 Render 会自动提供可信 HTTPS，电脑和手机可以直接访问。
 
-## 公网部署方案二：云服务器和域名
+## 公网部署方案二：Vercel（无需绑卡）
+
+仓库包含 `vercel.json` 和 `/api` Serverless Functions：
+
+1. 使用 GitHub 登录 Vercel，导入此仓库。
+2. Framework Preset 选择 `Vite`，其余构建配置使用仓库默认值。
+3. 添加 `XMOV_APP_ID`、`XMOV_APP_SECRET` 和 `XMOV_GATEWAY` 三个环境变量。
+4. 点击 Deploy。首次部署后 Vercel 会自动分配 HTTPS 公网地址。
+
+`PUBLIC_ORIGIN` 可以暂时不填，服务会校验请求是否来自当前 Vercel 域名。绑定自定义域名后，建议将其设置为完整的 HTTPS 地址。
+
+## 公网部署方案三：云服务器和域名
 
 服务器需安装 Docker，并将域名 A/AAAA 记录指向服务器。创建 `.env.production`：
 
