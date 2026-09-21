@@ -3,3 +3,5 @@ dist
 .env
 .env.production
 .caddy-data
+.wrangler
+.cloudflare-functions-build
