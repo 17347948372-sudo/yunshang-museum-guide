@@ -1,4 +1,4 @@
-import { forwardXmovRequest, jsonResponse } from "../../_lib/xmov.mjs";
+import { forwardXmovRequest, jsonResponse } from "../../_lib/xmov.js";
 
 export function onRequest(context) {
   if (!["POST", "DELETE"].includes(context.request.method)) {

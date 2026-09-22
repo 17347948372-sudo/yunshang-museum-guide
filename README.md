@@ -99,7 +99,18 @@ Render 会自动提供可信 HTTPS，电脑和手机可以直接访问。
 
 首次部署时不用填写 `PUBLIC_ORIGIN`，函数会自动校验当前访问域名。绑定自定义域名后再将它设置为完整 HTTPS 地址。
 
-## 公网部署方案四：云服务器和域名
+## 公网部署方案四：腾讯云 EdgeOne Pages（国内网络推荐）
+
+`functions/` 目录包含 EdgeOne Pages 可直接识别的后端函数：
+
+1. 打开 EdgeOne Pages 控制台，使用 GitHub 导入 `yunshang-museum-guide` 仓库。
+2. Framework preset 选择 `Vite`，构建命令填写 `pnpm build`，输出目录填写 `dist`。
+3. 添加 `XMOV_APP_ID`、`XMOV_APP_SECRET` 和 `XMOV_GATEWAY` 三个环境变量，其中 App Secret 必须选择加密变量。
+4. 点击部署，完成后使用平台分配的 `edgeone.app` HTTPS 地址访问。
+
+首次部署时不用填写 `PUBLIC_ORIGIN`。`edgeone.app` 地址可在国内网络直接访问，适合作为评审演示入口。
+
+## 公网部署方案五：云服务器和域名
 
 服务器需安装 Docker，并将域名 A/AAAA 记录指向服务器。创建 `.env.production`：
 

@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import md5 from "js-md5";
 
 const defaultGateway = "https://nebula-agent.xingyun3d.com/user/v1/ttsa_v2/session";
 
@@ -72,7 +72,7 @@ function createSignature({ env, method, gatewayUrl, payload }) {
     body,
     headers: {
       "X-APP-ID": env.XMOV_APP_ID,
-      "X-TOKEN": createHash("md5").update(source).digest("hex"),
+      "X-TOKEN": md5(source),
       "X-TIMESTAMP": String(timestamp),
     },
   };

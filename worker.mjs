@@ -1,4 +1,4 @@
-import { forwardXmovRequest, hasServerConfig, jsonResponse } from "./functions/_lib/xmov.mjs";
+import { forwardXmovRequest, hasServerConfig, jsonResponse } from "./functions/_lib/xmov.js";
 
 function withSecurityHeaders(response, pathname) {
   const secured = new Response(response.body, response);
