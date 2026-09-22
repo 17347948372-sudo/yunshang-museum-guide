@@ -3,9 +3,12 @@ import "./style.css";
 const app = document.querySelector("#app");
 
 const exhibits = [
-  { id: "01", name: "青铜太阳轮", era: "三星堆文化 · 约公元前 1200 年", tag: "镇馆之宝", color: "amber" },
-  { id: "02", name: "云纹玉璧", era: "战国 · 公元前 475—221 年", tag: "玉器展", color: "teal" },
-  { id: "03", name: "行旅山水图", era: "明代 · 十六世纪", tag: "书画展", color: "rose" },
+  { id: "01", name: "谷纹兽面玉璧", era: "中国 · 玉（软玉）", tag: "礼制与宇宙", image: "/exhibits/jade-bi.jpg", position: "center" },
+  { id: "02", name: "青铜礼器爵", era: "商末 · 公元前十一世纪", tag: "礼乐文明", image: "/exhibits/ritual-jue.jpg", position: "center 48%" },
+  { id: "03", name: "青花加彩葫芦瓶", era: "中国 · 景德镇瓷器", tag: "瓷器工艺", image: "/exhibits/porcelain-vase.jpg", position: "center 45%" },
+  { id: "04", name: "十二生肖陶俑", era: "唐代 · 八世纪", tag: "生肖文化", image: "/exhibits/zodiac-animals.jpg", position: "center 52%" },
+  { id: "05", name: "四季山水图卷", era: "明代 · 1635 年", tag: "书画长卷", image: "/exhibits/four-seasons.jpg", position: "center" },
+  { id: "06", name: "镇墓兽", era: "北魏至北齐 · 六世纪", tag: "墓葬艺术", image: "/exhibits/tomb-guardian.jpg", position: "center 48%" },
 ];
 
 const state = {
@@ -13,6 +16,8 @@ const state = {
   activeExhibit: exhibits[0],
   listening: false,
   layoutObserver: null,
+  carouselPage: 0,
+  carouselTimer: null,
   messages: [{ role: "guide", text: "你好，我是云上博物馆的星河导览员。今天想从哪件展品开始？" }],
 };
 
@@ -39,7 +44,14 @@ app.innerHTML = `
         <div class="interaction-note"><span class="sound-wave"><i></i><i></i><i></i><i></i></span><span id="interaction-status">支持文字对话 · 接入 SDK 后支持语音聆听与打断</span></div>
       </aside>
     </section>
-    <section class="exhibit-section"><div class="section-heading"><div><span class="eyebrow">CURATED FOR YOU</span><h2>本展厅精选</h2></div><span class="section-note">选择一件，开始探索 <span>→</span></span></div><div class="exhibit-list" id="exhibit-list"></div></section>
+    <section class="exhibit-section">
+      <div class="section-heading">
+        <div><span class="eyebrow">OPEN COLLECTION</span><h2>本展厅精选</h2></div>
+        <div class="carousel-heading-actions"><span class="section-note">大都会艺术博物馆开放馆藏</span><button class="carousel-button" id="carousel-prev" type="button" title="上一组展品" aria-label="上一组展品">←</button><button class="carousel-button" id="carousel-next" type="button" title="下一组展品" aria-label="下一组展品">→</button></div>
+      </div>
+      <div class="exhibit-carousel" id="exhibit-carousel"><div class="exhibit-track" id="exhibit-list"></div></div>
+      <div class="carousel-footer"><div class="carousel-dots" id="carousel-dots" aria-label="展品轮播页"></div><span id="carousel-counter">01 / 06</span></div>
+    </section>
     <footer><span>云上博物馆 · 具身智能导览实验</span><span>Powered by 魔珐星云 XmovAvatar</span></footer>
   </main>
 `;
@@ -60,9 +72,9 @@ function fitAvatarToStage() {
     avatar: {
       h_align: "center",
       v_align: "center",
-      scale: "92vh",
+      scale: "100vh",
       offset_x: 0,
-      offset_y: 10,
+      offset_y: 14,
     },
   });
 }
@@ -79,11 +91,47 @@ function renderMessages() {
 
 function renderExhibits() {
   document.querySelector("#exhibit-list").innerHTML = exhibits.map((exhibit, index) => `
-    <button class="exhibit-card ${index === 0 ? "selected" : ""}" data-id="${exhibit.id}">
-      <span class="exhibit-index">${exhibit.id}</span><span class="exhibit-art art-${exhibit.color}"><span></span></span>
+    <button class="exhibit-card ${index === 0 ? "selected" : ""}" data-id="${exhibit.id}" aria-label="选择讲解${exhibit.name}">
+      <span class="exhibit-image"><img src="${exhibit.image}" alt="${exhibit.name}" style="object-position:${exhibit.position}" ${index > 2 ? 'loading="lazy"' : ""} /></span>
+      <span class="exhibit-meta"><span class="exhibit-index">${exhibit.id}</span><span class="source-label">THE MET · OPEN ACCESS</span></span>
       <span class="exhibit-copy"><strong>${exhibit.name}</strong><small>${exhibit.era}</small><em>${exhibit.tag}</em></span><span class="card-arrow">↗</span>
     </button>
   `).join("");
+  updateCarousel();
+}
+
+function visibleExhibitCount() {
+  if (window.innerWidth <= 620) return 1;
+  if (window.innerWidth <= 1000) return 2;
+  return 3;
+}
+
+function updateCarousel() {
+  const track = document.querySelector("#exhibit-list");
+  const cards = [...track.children];
+  const visible = visibleExhibitCount();
+  const pageCount = Math.ceil(exhibits.length / visible);
+  state.carouselPage = Math.min(state.carouselPage, pageCount - 1);
+  const target = cards[state.carouselPage * visible];
+  track.style.transform = `translate3d(-${target?.offsetLeft || 0}px, 0, 0)`;
+  document.querySelector("#carousel-dots").innerHTML = Array.from({ length: pageCount }, (_, index) => `
+    <button type="button" class="carousel-dot ${index === state.carouselPage ? "active" : ""}" data-page="${index}" aria-label="查看第 ${index + 1} 组展品" aria-current="${index === state.carouselPage}"></button>
+  `).join("");
+  const firstVisible = state.carouselPage * visible + 1;
+  document.querySelector("#carousel-counter").textContent = `${String(firstVisible).padStart(2, "0")} / ${String(exhibits.length).padStart(2, "0")}`;
+}
+
+function goToCarouselPage(page, restart = true) {
+  const pageCount = Math.ceil(exhibits.length / visibleExhibitCount());
+  state.carouselPage = (page + pageCount) % pageCount;
+  updateCarousel();
+  if (restart) startCarousel();
+}
+
+function startCarousel() {
+  window.clearInterval(state.carouselTimer);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  state.carouselTimer = window.setInterval(() => goToCarouselPage(state.carouselPage + 1, false), 5200);
 }
 
 function escapeHtml(value) {
@@ -130,6 +178,7 @@ function selectExhibit(id) {
   state.activeExhibit = exhibit;
   document.querySelectorAll(".exhibit-card").forEach((card) => card.classList.toggle("selected", card.dataset.id === id));
   document.querySelector("#stage-caption").textContent = `星河 · 正在讲解「${exhibit.name}」`;
+  startCarousel();
 }
 
 async function initXmovAgent() {
@@ -187,6 +236,14 @@ async function initXmovAgent() {
 document.querySelector("#composer").addEventListener("submit", (event) => { event.preventDefault(); void askGuide(input.value); });
 document.querySelectorAll("#quick-prompts button").forEach((button) => button.addEventListener("click", () => void askGuide(button.dataset.prompt)));
 document.querySelector("#exhibit-list").addEventListener("click", (event) => { const card = event.target.closest(".exhibit-card"); if (card) selectExhibit(card.dataset.id); });
+document.querySelector("#carousel-prev").addEventListener("click", () => goToCarouselPage(state.carouselPage - 1));
+document.querySelector("#carousel-next").addEventListener("click", () => goToCarouselPage(state.carouselPage + 1));
+document.querySelector("#carousel-dots").addEventListener("click", (event) => { const dot = event.target.closest(".carousel-dot"); if (dot) goToCarouselPage(Number(dot.dataset.page)); });
+document.querySelector("#exhibit-carousel").addEventListener("pointerenter", () => window.clearInterval(state.carouselTimer));
+document.querySelector("#exhibit-carousel").addEventListener("pointerleave", startCarousel);
+document.querySelector("#exhibit-carousel").addEventListener("focusin", () => window.clearInterval(state.carouselTimer));
+document.querySelector("#exhibit-carousel").addEventListener("focusout", startCarousel);
+window.addEventListener("resize", updateCarousel);
 document.querySelector("#mic-button").addEventListener("click", async () => {
   if (!state.agent) { interactionStatus.textContent = "配置魔珐星云凭证后即可使用语音聆听"; return; }
   try { state.listening = !state.listening; state.listening ? await state.agent.startASR() : await state.agent.stopASR(); interactionStatus.textContent = state.listening ? "正在聆听…再次点击结束" : "实时具身交互已连接"; } catch (error) { console.error(error); }
@@ -194,9 +251,11 @@ document.querySelector("#mic-button").addEventListener("click", async () => {
 
 window.addEventListener("beforeunload", () => {
   state.layoutObserver?.disconnect();
+  window.clearInterval(state.carouselTimer);
   void state.agent?.destroy("page_unload");
 });
 
 renderMessages();
 renderExhibits();
+startCarousel();
 void initXmovAgent();
