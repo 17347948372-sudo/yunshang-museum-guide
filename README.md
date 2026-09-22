@@ -110,7 +110,18 @@ Render 会自动提供可信 HTTPS，电脑和手机可以直接访问。
 
 首次部署时不用填写 `PUBLIC_ORIGIN`。`edgeone.app` 地址可在国内网络直接访问，适合作为评审演示入口。
 
-## 公网部署方案五：云服务器和域名
+## 公网部署方案五：Netlify（无需域名）
+
+仓库包含 `netlify.toml` 和 `/netlify/functions`：
+
+1. 使用 GitHub 登录 Netlify，选择 Add new project / Import an existing project。
+2. 导入 `yunshang-museum-guide` 仓库，构建设置会自动读取，无需修改。
+3. 添加 `XMOV_APP_ID`、`XMOV_APP_SECRET` 和 `XMOV_GATEWAY` 三个环境变量。
+4. 部署后使用平台分配的长期有效 `netlify.app` HTTPS 地址。
+
+首次部署时不用填写 `PUBLIC_ORIGIN`。Netlify 免费域名无需另购域名，可直接用于电脑和手机访问。
+
+## 公网部署方案六：云服务器和域名
 
 服务器需安装 Docker，并将域名 A/AAAA 记录指向服务器。创建 `.env.production`：
 
