@@ -1,6 +1,7 @@
 :root { color:#f2eee6; background:#10171d; font-family:"Segoe UI","Microsoft YaHei UI","Noto Sans SC",sans-serif; font-synthesis:none; }
 * { box-sizing:border-box; }
 body { margin:0; min-width:320px; background:#10171d; }
+#nl-badge-frame { display:none!important; }
 button,input { font:inherit; } button { cursor:pointer; }
 .shell { max-width:1560px; margin:0 auto; padding:0 48px 36px; }
 .topbar { height:86px; border-bottom:1px solid rgba(242,238,230,.14); display:flex; align-items:center; justify-content:space-between; }
